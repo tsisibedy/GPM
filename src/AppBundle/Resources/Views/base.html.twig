@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Bootstrap Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ asset('bundles/app/picker/jquery-ui.css') }}">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="{{ asset('bundles/app/picker/jquery-1.12.4.js') }}"></script>
+    <script src="{{ asset('bundles/app/picker/jquery-ui.js') }}"></script>
+    <style>
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+    </style>
+    <script>
+        $(document).ready(function () {
+            var d = new Date();
+            var n = d.toLocaleDateString();
+            $("#congeCreate").hide();
+            $("#congeStatus").hide();
+            $("#congeDemandeur").hide();
+            $("#congeSumbit").hide();
+            $("#naissance").val(n);
+            var dateCongeCreate = "" + n + "";
+            var congeCreate = dateCongeCreate.split('/');
+            var dCreate = congeCreate[1] + '/' + congeCreate[0] + '/' + congeCreate[2];
+            $("#congeCreate").val(dCreate);
+            $('#msgdate').hide();
+            $("#congeDebut").val('');
+            $("#congeFin").val('');
+            $(function () {
+                $("#naissance").datepicker();
+                $("#congeDebut").datepicker();
+                $("#congeFin").datepicker();
+            });
+            $('#demander').click(function () {
+                valider();
+            });
+            function valider() {
+                if ($("#congeDebut").val() != '' && $("#congeFin").val() != '') {
+                    var tempDebut = $('#congeDebut').val().split('/');
+                    var tempFin = $('#congeFin').val().split('/');
+                    var dDebut = new Date(tempDebut[2] + '/' + tempDebut[0] + '/' + tempDebut[1]);
+                    var dFin = new Date(tempFin[2] + '/' + tempFin[0] + '/' + tempFin[1]);
+                    if (dDebut > dFin) {
+                        $('#msgdate').show();
+                    }
+                    if (dDebut <= dFin) {
+                        $('#msgdate').hide();
+                        if ($('#typeConge').val() != '') {
+                            $('#congeSumbit').click();
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</head>
+<body>
+
+<nav class="navbar navbar-inverse" style="border-radius: 0px 0px 0px 0px;">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="{{ path('showList') }}">Cour d'etude</a>
+        </div>
+        <div class="collapse navbar-collapse" id="myNavbar">
+            <ul class="nav navbar-nav">
+                <li class="active"><a href="#">Accueil</a></li>{#
+                {% if is_granted('ROLE_SUPER_ADMIN') %}#}
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">Gerer les Utilisateur<span
+                                class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="{{ path('createViewPersonnel') }}">Creer un utilisateur</a></li>
+                        <li><a href="{{ path('showList') }}">List des utilisateur</a></li>
+                    </ul>
+                </li>
+                {#{% endif %}#}
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">Gerer les conger<span
+                                class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="{{ path('createViewConge') }}">Demander un conger</a></li>
+                        <li><a href="{{ path('showListConge') }}">List des congés</a></li>
+                        <li><a href="#">Gerer les type de congé</a></li>
+                    </ul>
+                </li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                        {% if is_granted("IS_AUTHENTICATED_REMEMBERED") %}
+                            Connecté: {{ app.user.username }}
+                        {% else %}
+                            Connectez-vous
+                        {% endif %}
+                        <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li>
+                            {% if is_granted("IS_AUTHENTICATED_REMEMBERED") %}
+                                <a href="{{ path('fos_user_security_logout') }}">
+                                    Déconnectée
+                                </a>
+                            {% else %}
+                                <a href="{{ path('fos_user_security_login') }}">Se connecter</a>
+                            {% endif %}
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+    {% block body %}
+    {% endblock %}
+</div>
+
+</body>
+</html>

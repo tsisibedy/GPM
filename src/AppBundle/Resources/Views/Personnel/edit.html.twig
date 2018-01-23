@@ -1,0 +1,174 @@
+{% extends 'AppBundle::base.html.twig' %}
+
+{% block body %}
+    <style>
+        .form {
+            width: 400px;
+            border: 1px solid #222222;
+            padding: 30px;
+            border-radius: 10px 10px 10px 10px;
+            margin-top: 50px;
+        }
+
+        label {
+            float: left;
+        }
+    </style>
+    <div class="container">
+        <center>
+            <center>
+                <div class="alert alert-success" id="success" style="width: 500px;margin:auto;">
+                    <strong>Success!</strong> votre modification est reuissi avec success!.
+                </div>
+                <img src="{{ asset('bundles/app/img/load.gif') }}" id="load"
+                     style="width: 30px;height: 30px;position: absolute;margin-top: 50px;">
+            </center>
+            <div class="form">
+                <h2 style="margin-bottom: 50px;">Modification d'utilisateur</h2>
+                <div class="form-group">
+                    <label><span style="color: red;">*</span>Nom:</label>
+                    <input type="text" class="form-control" placeholder="Nom" name="employerNom" required>
+                </div>
+                <div class="form-group">
+                    <label><span style="color: red;">*</span>Prenom:</label>
+                    <input type="text" class="form-control" placeholder="Nom" name="employerPrenom" required>
+                </div>
+                <div class="form-group">
+                    <label><span style="color: red;">*</span>Date de naissance:</label>
+                    <input type="text" id="naissance" class="form-control" placeholder="Nom" name="employerDateNaissance" required>
+                </div>
+                <div class="form-group">
+                    <label><span style="color: red;">*</span>Lieu de naissance:</label>
+                    <input type="text" class="form-control" placeholder="Nom" name="employerLieuNaissance" required>
+                </div>
+                <div class="form-group">
+                    <label><span style="color: red;">*</span>CIN:</label>
+                    <input type="text" class="form-control" placeholder="Nom" name="employerCin" required>
+                </div>
+                <div class="form-group">
+                    <label><span style="color: red;">*</span>Sexe:</label>
+                    <select class="form-control" name="employerSexe" id="creditCard"
+                            placeholder="Select Card" required>
+                        <option>Homme</option>
+                        <option>Femme</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label><span style="color: red;">*</span>Situation matrimoniale:</label>
+                    <input type="text" class="form-control" placeholder="Nom" name="employerSituation" required>
+                </div>
+                <div class="form-group">
+                    <label><span style="color: red;">*</span>Addresse:</label>
+                    <input type="text" class="form-control" placeholder="Nom" name="employerAddresse" required>
+                </div>
+                <div class="form-group">
+                    <label><span style="color: red;">*</span>Email:</label>
+                    <input type="email" name="email" class="form-control"
+                           id="inputEmail3" placeholder="Email" required>
+                </div>
+                <div class="form-group">
+                    <label><span style="color: red;">*</span>Roles:</label>
+                    <select name="roles" class="form-control" id="roles"
+                            placeholder="Select Card" required>
+                        {% if is_granted("IS_AUTHENTICATED_REMEMBERED") %}
+                            <option>ROLE_SUPER_ADMIN</option>
+                        {% endif %}
+                        <option value="ROLE_ADMIN">ROLE_ADMIN</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-default" id="poster">Enregistrer</button>
+                <br>
+                <br>
+                <br>
+                <a href="{{ path('fos_user_security_login') }}">Se connecter</a>
+            </div>
+        </center>
+    </div>
+    <script>
+        $(document).ready(function () {
+            $('#load').show();
+            $('#form').hide();
+            $('#success').hide();
+            ajaxSetFormValue();
+
+            $('#poster').click(function () {
+                ajaxUpdateBaseValue();
+            });
+        });
+
+        function ajaxSetFormValue() {
+            var idP = '{{ id }}';
+            $('#form').show();
+            $.ajax({
+                url: 'editPersonnelAjax',
+                type: 'POST',
+                data: 'id=' + idP,
+                dataType: 'json',
+                success: function (data) {
+                    $.each(data, function (cle, valeur) {
+                        setValueForm(valeur);
+                    });
+                    $('#load').hide();
+                },
+                error: function (resultat, statut, erreur) {
+                    $('#load').hide();
+                    alert('test');
+                }
+
+            });
+        }
+
+        function ajaxUpdateBaseValue() {
+            $('#load').show();
+            var identifiant = '{{ id }}';
+            var nom = $('[name="employerNom"]').val();
+            var prenom = $('[name="employerPrenom"]').val();
+            var dateN = $('[name="employerDateNaissance"]').val();
+            var lieu = $('[name="employerLieuNaissance"]').val();
+            var cin = $('[name="employerCin"]').val();
+            var sexe = $('[name="employerSexe"]').val();
+            var situation = $('[name="employerSituation"]').val();
+            var addresse = $('[name="employerAddresse"]').val();
+            var email = $('[name="email"]').val();
+            var roles = $('[name="roles"]').val();
+            $('#form').show();
+            $.ajax({
+                url: 'updateBasePersonnel',
+                type: 'POST',
+                data: 'idP=' + identifiant+'&roles='+roles+'&employerNom='+nom+'&employerPrenom='+prenom+'&employerDateNaissance='+dateN+'&employerLieuNaissance='+lieu+'&employerCin='+cin+'&employerSexe='+sexe+'&employerSituation='+situation+'&employerAddresse='+addresse+'&email='+email,
+                dataType: 'json',
+                success: function (data) {
+                    $.each(data, function (cle, valeur) {
+                        setValueForm(valeur);
+                    });
+                    $('#load').hide();
+                    $('#success').show();
+                    setTimeout(hideMsg, 2000);
+                },
+                error: function (resultat, statut, erreur) {
+                    $('#load').hide();
+                    alert('tsy tafaboaka');
+                }
+
+            });
+        }
+
+        function setValueForm(valeur) {
+            $('[name="employerNom"]').val(valeur.nom);
+            $('[name="employerPrenom"]').val(valeur.prenom);
+            $('[name="employerDateNaissance"]').val(valeur.DateN);
+            $('[name="employerLieuNaissance"]').val(valeur.lieu);
+            $('[name="employerSexe"]').val(valeur.sexe);
+            $('[name="employerSituation"]').val(valeur.situation);
+            $('[name="employerAddresse"]').val(valeur.addresse);
+            $('[name="employerCin"]').val(valeur.cin);
+            $('[name="email"]').val(valeur.mail);
+        }
+
+        function hideMsg() {
+            $('#success').fadeOut(3000);
+            document.location.href="{{ path('showList') }}";
+        }
+
+    </script>
+{% endblock %}

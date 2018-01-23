@@ -1,0 +1,90 @@
+{% extends 'AppBundle::base.html.twig' %}
+
+{% block body %}
+<style>
+    form {
+        width: 400px;
+        border: 1px solid #222222;
+        padding: 30px;
+        border-radius: 10px 10px 10px 10px;
+        margin-top: 50px;
+    }
+
+    label {
+        float: left;
+    }
+</style>
+<div class="container">
+    <center>
+        <form action="{{ path('createPersonnel') }}" method="post">
+            <h2 style="margin-bottom: 50px;">Inscription d'utilisateur</h2>
+            <div class="form-group">
+                <label><span style="color: red;">*</span>Nom:</label>
+                <input type="text" class="form-control" placeholder="Nom" name="employerNom" required>
+            </div>
+            <div class="form-group">
+                <label><span style="color: red;">*</span>Prenom:</label>
+                <input type="text" class="form-control" placeholder="Nom" name="employerPrenom" required>
+            </div>
+            <div class="form-group">
+                <label><span style="color: red;">*</span>Date de naissance:</label>
+                <input type="text" id="naissance" class="form-control" placeholder="Nom" name="employerDateNaissance" required>
+            </div>
+            <div class="form-group">
+                <label><span style="color: red;">*</span>Lieu de naissance:</label>
+                <input type="text" class="form-control" placeholder="Nom" name="employerLieuNaissance" required>
+            </div>
+            <div class="form-group">
+                <label><span style="color: red;">*</span>CIN:</label>
+                <input type="text" class="form-control" placeholder="Nom" name="employerCin" required>
+            </div>
+            <div class="form-group">
+                <label><span style="color: red;">*</span>Sexe:</label>
+                <select class="form-control" name="employerSexe" id="creditCard"
+                        placeholder="Select Card" required>
+                    <option>Homme</option>
+                    <option>Femme</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label><span style="color: red;">*</span>Situation matrimoniale:</label>
+                <input type="text" class="form-control" placeholder="Nom" name="employerSituation" required>
+            </div>
+            <div class="form-group">
+                <label><span style="color: red;">*</span>Addresse:</label>
+                <input type="text" class="form-control" placeholder="Nom" name="employerAddresse" required>
+            </div>
+            <div class="form-group">
+                <label><span style="color: red;">*</span>Username:</label>
+                <input type="text" name="username" class="form-control"
+                       id="inputEmail3" placeholder="Username" required>
+            </div>
+            <div class="form-group">
+                <label><span style="color: red;">*</span>Password:</label>
+                <input type="password" name="password" class="form-control"
+                       id="inputEmail3" placeholder="Password" required>
+            </div>
+            <div class="form-group">
+                <label><span style="color: red;">*</span>Email:</label>
+                <input type="email" name="email" class="form-control"
+                       id="inputEmail3" placeholder="Email" required>
+            </div>
+            <div class="form-group">
+                <label><span style="color: red;">*</span>Roles:</label>
+                <select name="roles" class="form-control" id="roles"
+                        placeholder="Select Card" required>
+                    {% if is_granted("IS_AUTHENTICATED_REMEMBERED") %}
+                        <option>ROLE_SUPER_ADMIN</option>
+                    {% endif %}
+                    <option value="ROLE_ADMIN">ROLE_ADMIN</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-default">Enregistrer</button>
+            <br>
+            <br>
+            <br>
+            <a href="{{ path('fos_user_security_login') }}">Se connecter</a>
+        </form>
+    </center>
+</div>
+{% endblock %}

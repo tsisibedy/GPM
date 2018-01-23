@@ -1,0 +1,133 @@
+{% extends 'AppBundle::base.html.twig' %}
+
+{% block body %}
+    <center>
+        <img src="{{ asset('bundles/app/img/load.gif') }}" id="load"
+             style="width: 30px;height: 30px;position: absolute;margin-top: 50px;">
+    </center>
+    <div class="container">
+        <div class="form-group">
+            <input type="text" class="form-control" id="search" style="width: 300px;float: right;"
+                   placeholder="Votre recherche">
+        </div>
+        <table class="table table-bordered">
+            <caption>Liste des personnels:</caption>
+            <thead>
+            <tr style="background-color: #636363;color: white;">
+                <th>Nom et prenom</th>
+                <th>Date naissance</th>
+                <th>Lieu de naissance</th>
+                <th>CIN</th>
+                <th>Sexe</th>
+                <th>Situation matrimoniale</th>
+                <th>Addresse</th>
+                <th>Email</th>
+                <th>Action</th>
+            </tr>
+            </thead>
+            <tbody id="data">
+
+            </tbody>
+        </table>
+        <p>Resultat : <span id="nbr"></span></p>
+    </div>
+    <script>
+        $(document).ready(function () {
+            $('#load').show();
+            ajaxListPersonnel();
+            $('#search').keyup(function () {
+                ajaxListRecherche($('#search').val());
+            });
+        });
+
+        function ajaxListPersonnel() {
+            $('#load').show();
+            $("#data").empty();
+            $.ajax({
+                url: 'listPersonnel',
+                type: 'POST',
+                dataType: 'json',
+                success: function (data) {
+                    document.getElementById("nbr").innerHTML =data.length;
+                    if (data.length == 0) {
+                        var table = "<tr class='item'>" +
+                            "<td id=\"id\" colspan=\"8\" style='text-align: center;background-color: #dad55e;'>Aucune utilisateur trouver dans la base de données!</td>" +
+                            "</tr>";
+                        $("#data").append(table);
+                    } else if (data.length >= 0) {
+                        $.each(data, function (cle, valeur) {
+                            var table = tableList(valeur);
+                            $("#data").append(table);
+                        });
+                    }
+                    $('#load').hide();
+                },
+                error: function (resultat, statut, erreur) {
+
+                }
+
+            });
+        }
+
+        function ajaxListRecherche(searcher) {
+            $('#load').show();
+            $("#data").empty();
+            var search = searcher;
+            var tester = false;
+            currentRequest = $.ajax({
+                url: 'searchList',
+                type: 'POST',
+                data: 'search=' + search,
+                dataType: 'json',
+                beforeSend: function () {
+                    if (typeof currentRequest != typeof undefined) {
+                        currentRequest.abort();
+                        tester = true;
+                    }
+                },
+                success: function (data) {
+                    document.getElementById("nbr").innerHTML =data.length;
+                    if (data.length == 0) {
+                        var table = "<tr class='item'>" +
+                            "<td id=\"id\" colspan=\"8\" style='text-align: center;background-color: #dad55e;'>Aucune utilisateur trouver dans la base de données!</td>" +
+                            "</tr>";
+                        $("#data").append(table);
+                    } else if (data.length >= 0) {
+                        $.each(data, function (cle, valeur) {
+                            var table = tableList(valeur);
+                            $("#data").append(table);
+                        });
+                    }
+                    $('#load').hide();
+                },
+                error: function (resultat, statut, erreur) {
+                    $('#load').show();
+                },
+                completed: function () {
+                    $('#load').hide();
+                }
+            });
+        }
+
+        function tableList(valeur) {
+            var urlEdit = '{{ path("editPersonnel", {'id': 'personnel_id'}) }}';
+            var urlDelete = '{{ path("deletePersonnelAjax", {'id': 'personnel_id'}) }}';
+            urlEdit = urlEdit.replace("personnel_id", valeur.idP);
+            urlDelete = urlDelete.replace("personnel_id", valeur.idP);
+            var textEdit = '<a href='+ urlEdit +'>Modifier</a>';
+            var textDelete = '<a href='+ urlDelete +'>Supprimer</a>';
+            var tableL = "<tr class='item'>" +
+                "<td id=\"id\">" + valeur.nom + " " + valeur.prenom + "</td>" +
+                "<td id=\"id\">" + valeur.DateN + "</td>" +
+                "<td id=\"id\">" + valeur.lieu + "</td>" +
+                "<td id=\"id\">" + valeur.cin + "</td>" +
+                "<td id=\"id\">" + valeur.sexe + "</td>" +
+                "<td id=\"id\">" + valeur.situation + "</td>" +
+                "<td id=\"id\">" + valeur.addresse + "</td>" +
+                "<td id=\"id\">" + valeur.email + "</td>" +
+                "<td id=\"id\">"+textEdit+" | "+textDelete+"</td>" +
+                "</tr>";
+            return tableL;
+        }
+    </script>
+{% endblock %}

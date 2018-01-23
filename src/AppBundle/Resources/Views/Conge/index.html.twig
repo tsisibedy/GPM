@@ -1,0 +1,91 @@
+{% extends 'AppBundle::base.html.twig' %}
+
+{% block body %}
+    <center>
+        <img src="{{ asset('bundles/app/img/load.gif') }}" id="load"
+             style="width: 30px;height: 30px;position: absolute;margin-top: 50px;">
+    </center>
+    <div class="container">
+        <div class="form-group">
+            <input type="text" class="form-control" id="search" style="width: 300px;float: right;"
+                   placeholder="Votre recherche">
+        </div>
+        <table class="table table-bordered">
+            <caption>Liste des congés:</caption>
+            <thead>
+            <tr style="background-color: #636363;color: white;">
+                <th>N° de congé</th>
+                <th>Demandeur</th>
+                <th>Date de creation</th>
+                <th>Type du congé</th>
+                <th>Date de debut</th>
+                <th>Date de fin</th>
+                <th>Status du congé</th>
+                <th>Action</th>
+            </tr>
+            </thead>
+            <tbody id="data">
+
+            </tbody>
+        </table>
+        <p>Resultat : <span id="nbr"></span></p>
+    </div>
+    <script>
+        $(document).ready(function () {
+            $('#load').show();
+            ajaxListConge();
+            $('#search').keyup(function () {
+                ajaxListRecherche($('#search').val());
+            });
+        });
+
+        function ajaxListConge() {
+            $('#load').show();
+            $("#data").empty();
+            $.ajax({
+                url: 'listConge',
+                type: 'POST',
+                dataType: 'json',
+                success: function (data) {
+                    document.getElementById("nbr").innerHTML =data.length;
+                    if (data.length == 0) {
+                        var table = "<tr class='item'>" +
+                            "<td id=\"id\" colspan=\"8\" style='text-align: center;background-color: #dad55e;'>Aucune congé trouver dans la base de données!</td>" +
+                            "</tr>";
+                        $("#data").append(table);
+                    } else if (data.length >= 0) {
+                        $.each(data, function (cle, valeur) {
+                            var table = tableList(valeur);
+                            $("#data").append(table);
+                        });
+                    }
+                    $('#load').hide();
+                },
+                error: function (resultat, statut, erreur) {
+
+                }
+
+            });
+        }
+
+        function tableList(valeur) {
+            var urlEdit = '{{ path("editPersonnel", {'id': 'personnel_id'}) }}';
+            var urlDelete = '{{ path("deletePersonnelAjax", {'id': 'personnel_id'}) }}';
+            urlEdit = urlEdit.replace("personnel_id", valeur.idP);
+            urlDelete = urlDelete.replace("personnel_id", valeur.idP);
+            var textEdit = '<a href='+ urlEdit +'>Modifier</a>';
+            var textDelete = '<a href='+ urlDelete +'>Supprimer</a>';
+            var tableL = "<tr class='item'>" +
+                "<td id=\"id\">" + valeur.idP+ "</td>" +
+                "<td id=\"id\">" + valeur.demandeur + "</td>" +
+                "<td id=\"id\">" + valeur.createConge + "</td>" +
+                "<td id=\"id\">" + valeur.type + "</td>" +
+                "<td id=\"id\">" + valeur.dateStart + "</td>" +
+                "<td id=\"id\">" + valeur.dateFin + "</td>" +
+                "<td id=\"id\">" + valeur.statusConge + "</td>" +
+                "<td id=\"id\">"+textEdit+" | "+textDelete+"</td>" +
+                "</tr>";
+            return tableL;
+        }
+    </script>
+{% endblock %}
