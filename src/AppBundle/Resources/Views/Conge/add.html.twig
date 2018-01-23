@@ -16,7 +16,7 @@
     </style>
     <div class="container">
         <center>
-            <form action="{{ path('showList') }}" method="post">
+            <form action="{{ path('createAddConge') }}" method="post">
                 <h2 style="margin-bottom: 50px;">Creation de demande de conge</h2>
                 <input type="text" name="congeDemandeurId" value="{{ app.user.id }}" id="congeDemandeur">
                 <input type="text" name="congeStatus" id="congeStatus" value="0">

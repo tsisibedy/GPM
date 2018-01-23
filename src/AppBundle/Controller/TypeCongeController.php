@@ -44,7 +44,7 @@ class TypeCongeController extends Controller
     }
 
     /**
-     * @Route("/createAddConge", name="createAddConge")
+     * @Route("/createAddTypeConge", name="createAddTypeConge")
      */
     public function createAddAction(Request $request)
     {
