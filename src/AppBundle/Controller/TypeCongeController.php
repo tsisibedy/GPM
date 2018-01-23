@@ -3,18 +3,20 @@
 namespace AppBundle\Controller;
 
 use AppBundle\Entity\Conge;
+use AppBundle\Entity\Typeconge;
 use AppBundle\Entity\User;
 use AppBundle\Form\CongeType;
+use AppBundle\Form\TypecongeType;
 use AppBundle\Form\UserType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-class CongeController extends Controller
+class TypeCongeController extends Controller
 {
     /**
-     * @Route("/showListConge", name="showListConge")
+     * @Route("/showListTypeConge", name="showListTypeConge")
      */
     public function indexAction(Request $request)
     {
@@ -23,7 +25,7 @@ class CongeController extends Controller
     }
 
     /**
-     * @Route("/listConge", name="listConge")
+     * @Route("/listTypeConge", name="listTypeConge")
      */
     public function ajaxListCongeAction(Request $request)
     {
@@ -33,12 +35,12 @@ class CongeController extends Controller
     }
 
     /**
-     * @Route("/createViewConge", name="createViewConge")
+     * @Route("/create-view-type-conge", name="createViewTypeConge")
      */
     public function createViewCongeAction(Request $request)
     {
         // replace this example code with whatever you need
-        return $this->render('AppBundle:Conge:add.html.twig');
+        return $this->render('AppBundle:TypeConge:add.html.twig');
     }
 
     /**
@@ -46,14 +48,28 @@ class CongeController extends Controller
      */
     public function createAddAction(Request $request)
     {
-        $conge = new Conge();
-        $form = $this->createForm(CongeType::class, $conge);
+        $typeConge = new Typeconge();
+        $form = $this->createForm(TypecongeType::class, $typeConge);
         $form->submit($request->request->all());
         $oManager = $this->getDoctrine()->getManager();
-        $oManager->persist($conge);
+        $oManager->persist($typeConge);
         $oManager->flush();
 
-        return $this->redirect($this->generateUrl('showListConge'));
+        return $this->redirect($this->generateUrl('showListTypeConge'));
+    }
+
+    /**
+     * @Route("/updateBaseStatusTypeConge", name="updateBaseStatusTypeConge")
+     */
+    public function updateBaseTypeCongeAction(Request $request)
+    {
+       $this
+            ->getDoctrine()
+            ->getManager()
+            ->getRepository('AppBundle:Typeconge')
+            ->updateStatus($request->query->get('status'),$request->query->get('id'));
+
+        return $this->redirect($this->generateUrl('showListTypeConge'));
     }
 
     private function selectData($value)
@@ -61,27 +77,23 @@ class CongeController extends Controller
         $queryBuilder = $this->getDoctrine()->getManager()->createQueryBuilder('U');
         $queryBuilder->add('select', 'T');
         $queryBuilder->add('from', 'AppBundle:Typeconge T');
-        $queryBuilder->where('C.id LIKE :search OR C.congeType LIKE :search OR C.congeDateStart LIKE :search OR C.congeDateFin LIKE :search OR C.congeStatus LIKE :search OR C.congeDemandeurId LIKE :search  OR C.congeDateCreate LIKE :search');
+        $queryBuilder->where('T.id LIKE :search OR T.typecongeName LIKE :search OR T.typecongeStatus LIKE :search');
         $queryBuilder->setParameter('search', '%' . $value . '%');
-        $queryBuilder->orderBy('C.id', 'ASC');
+        $queryBuilder->orderBy('T.id', 'ASC');
         $query = $queryBuilder->getQuery();
-        $conge = $query->getResult();
+        $typeConge = $query->getResult();
 
-        $listConge = [];
-        foreach ($conge as $Conge) {
-            $listConge [] = [
-                'idP' => $Conge->getId(),
-                'dateFin' => $Conge->getCongeDateFin(),
-                'dateStart' => $Conge->getCongeDateStart(),
-                'demandeur' => $Conge->getCongeDemandeurId(),
-                'statusConge' => $Conge->getCongeStatus(),
-                'type' => $Conge->getCongeType(),
-                'createConge' => $Conge->getCongeDateCreate(),
+        $listTypeConge = [];
+        foreach ($typeConge as $tConge) {
+            $listTypeConge [] = [
+                'idP' => $tConge->getId(),
+                'nameType' => $tConge->getTypecongeName(),
+                'statusType' => $tConge->getTypecongeStatus(),
             ];
         }
 
 
-        return $listConge;
+        return $listTypeConge;
     }
 
 }

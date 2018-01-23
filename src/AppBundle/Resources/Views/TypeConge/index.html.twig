@@ -39,7 +39,7 @@
             $('#load').show();
             $("#data").empty();
             $.ajax({
-                url: 'listConge',
+                url: 'listTypeConge',
                 type: 'POST',
                 dataType: 'json',
                 success: function (data) {
@@ -65,18 +65,33 @@
         }
 
         function tableList(valeur) {
-            var urlEdit = '{{ path("editPersonnel", {'id': 'personnel_id'}) }}';
-            var urlDelete = '{{ path("deletePersonnelAjax", {'id': 'personnel_id'}) }}';
-            urlEdit = urlEdit.replace("personnel_id", valeur.idP);
-            urlDelete = urlDelete.replace("personnel_id", valeur.idP);
-            var textEdit = '<a href='+ urlEdit +'>Modifier</a>';
-            var textDelete = '<a href='+ urlDelete +'>Supprimer</a>';
-            var tableL = "<tr class='item'>" +
-                "<td id=\"id\">" + valeur.idP+ "</td>" +
-                "<td id=\"id\">" + valeur.demandeur + "</td>" +
-                "<td id=\"id\">" + valeur.createConge + "</td>" +
-                "<td id=\"id\">"+textEdit+" | "+textDelete+"</td>" +
-                "</tr>";
+            var statusType =(valeur.statusType == 1)?"Activé":"Désactivé";
+            var label = "";
+            if(valeur.statusType == 1){
+                var urlAction = '{{ path("updateBaseStatusTypeConge", {'id': 'typeconge_id','status':0}) }}';
+                label ="Désactiver";
+            }else {
+                var urlAction = '{{ path("updateBaseStatusTypeConge", {'id': 'typeconge_id','status':1}) }}';
+                label ="Activer";
+            }
+            urlAction = urlAction.replace("typeconge_id", valeur.idP);
+            var textAction = '<a href='+ urlAction +'>'+label+'</a>';
+            if (valeur.statusType == 1){
+                var tableL = "<tr class='item'>" +
+                    "<td id=\"id\">" + valeur.idP+ "</td>" +
+                    "<td id=\"id\">" + valeur.nameType + "</td>" +
+                    "<td id=\"id\" style=\"background-color: mediumseagreen;\">" + statusType + "</td>" +
+                    "<td id=\"id\">"+textAction+"</td>" +
+                    "</tr>";
+            }else {
+                var tableL = "<tr class='item'>" +
+                    "<td id=\"id\">" + valeur.idP+ "</td>" +
+                    "<td id=\"id\">" + valeur.nameType + "</td>" +
+                    "<td id=\"id\" style=\"background-color: #dd6666;\">" + statusType + "</td>" +
+                    "<td id=\"id\">"+textAction+"</td>" +
+                    "</tr>";
+            }
+
             return tableL;
         }
     </script>

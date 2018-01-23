@@ -37,8 +37,11 @@ class CongeController extends Controller
      */
     public function createViewCongeAction(Request $request)
     {
-        // replace this example code with whatever you need
-        return $this->render('AppBundle:Conge:add.html.twig');
+        $data = $this->selectDataTypeConge('');
+
+        return $this->render('AppBundle:Conge:add.html.twig',array(
+            'data'=>$data
+        ));
     }
 
     /**
@@ -82,6 +85,30 @@ class CongeController extends Controller
 
 
         return $listConge;
+    }
+
+    private function selectDataTypeConge($value)
+    {
+        $queryBuilder = $this->getDoctrine()->getManager()->createQueryBuilder('U');
+        $queryBuilder->add('select', 'T');
+        $queryBuilder->add('from', 'AppBundle:Typeconge T');
+        $queryBuilder->where('T.id LIKE :search OR T.typecongeName LIKE :search OR T.typecongeStatus LIKE :search');
+        $queryBuilder->setParameter('search', '%' . $value . '%');
+        $queryBuilder->orderBy('T.id', 'ASC');
+        $query = $queryBuilder->getQuery();
+        $typeConge = $query->getResult();
+
+        $listTypeConge = [];
+        foreach ($typeConge as $tConge) {
+            $listTypeConge [] = [
+                'idP' => $tConge->getId(),
+                'nameType' => $tConge->getTypecongeName(),
+                'statusType' => $tConge->getTypecongeStatus(),
+            ];
+        }
+
+
+        return $listTypeConge;
     }
 
 }

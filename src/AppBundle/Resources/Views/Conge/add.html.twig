@@ -24,20 +24,26 @@
                     <label><span style="color: red;">*</span>Type de conge:</label>
                     <select class="form-control" name="congeType" id="typeConge"
                             placeholder="Select Card" required>
-                        <option value="test">test</option>
+                        {% for item in data %}
+                            {% if item.statusType == 1 %}
+                                <option value="{{ item.idP }}">{{ item.nameType }}</option>
+                            {% endif %}
+                        {% endfor %}
                     </select>
                 </div>
                 <div class="form-group">
                     <label><span style="color: red;">*</span>Date debut de congé :</label>
-                    <input type="text" id="congeDebut" class="form-control" placeholder="Date de debut" name="congeDateStart" required>
+                    <input type="text" id="congeDebut" class="form-control" placeholder="Date de debut"
+                           name="congeDateStart" required>
                 </div>
                 <div class="form-group">
                     <label><span style="color: red;">*</span>Date fin de congé :</label>
-                    <input type="text" id="congeFin" class="form-control" placeholder="Date de fin" name="congeDateFin" required>
+                    <input type="text" id="congeFin" class="form-control" placeholder="Date de fin" name="congeDateFin"
+                           required>
                     <span id="msgdate" style="font-size: 10px;color: red;">Date de fin de congé doit etre superieur ou egale à la date de debut .</span>
                 </div>
                 <div class="form-group">
-                    <input type="text" id="congeCreate" class="form-control"  name="congeDateCreate" required>
+                    <input type="text" id="congeCreate" class="form-control" name="congeDateCreate" required>
                 </div>
                 <span class="btn btn-default" id="demander">Demander</span>
                 <input type="submit" id="congeSumbit">

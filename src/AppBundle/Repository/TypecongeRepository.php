@@ -12,4 +12,14 @@ use Doctrine\ORM\EntityRepository;
  */
 class TypecongeRepository extends EntityRepository
 {
+    public function updateStatus($status,$id)
+    {
+        $qBDelege = $this->getEntityManager()->createQueryBuilder();
+        $qBDelege->update('AppBundle:Typeconge', 't')
+            ->set('t.typecongeStatus', $status)
+            ->where('t.id = :id')
+            ->setParameter('id', $id)
+            ->getQuery()
+            ->execute();
+    }
 }
