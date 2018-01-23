@@ -69,6 +69,14 @@
         }
 
         function tableList(valeur) {
+            var statusText = "";
+            if(valeur.statusConge == 1){
+                statusText ="En cours";
+            }else if(valeur.statusConge == 2){
+                statusText ="Validé";
+            }else {
+                statusText ="Réfugé";
+            }
             var urlEdit = '{{ path("editPersonnel", {'id': 'personnel_id'}) }}';
             var urlDelete = '{{ path("deletePersonnelAjax", {'id': 'personnel_id'}) }}';
             urlEdit = urlEdit.replace("personnel_id", valeur.idP);
@@ -82,7 +90,7 @@
                 "<td id=\"id\">" + valeur.type + "</td>" +
                 "<td id=\"id\">" + valeur.dateStart + "</td>" +
                 "<td id=\"id\">" + valeur.dateFin + "</td>" +
-                "<td id=\"id\">" + valeur.statusConge + "</td>" +
+                "<td id=\"id\">" + statusText + "</td>" +
                 "<td id=\"id\">"+textEdit+" | "+textDelete+"</td>" +
                 "</tr>";
             return tableL;
